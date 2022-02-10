@@ -110,7 +110,7 @@ app.post('/api/v1/tours', (req , res)=>{
   
   fs.writeFile('./dev-data/data/tours-simple.json' , newTourJson,(err)=>{
             res
-            .status(201)
+            .status(201)// 201 status code data is send to server successfully
             .json({
                 status : 'success' ,
                 data : {
@@ -120,6 +120,55 @@ app.post('/api/v1/tours', (req , res)=>{
   })
     //    res.send('done');
 });
+
+/**
+ *  patch request method : used to update only
+ *  existing property of the objects like id , duration and name updation
+ *  
+ *  .patch('url/:parameter-value', (req,res)=>{})
+ *  
+ *  parameter-value is new value that we want to update. 
+ */
+app.patch('/api/v1/tours/:id' , (req , res)=>{
+    const id = req.params.id *1;
+    if(id > tours.length){
+        return res.status(404).json({
+            // 404 status code for page not found 
+            status : 'Fail',
+            meassage : 'Invalid ID'
+        })
+    }
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+        meassage: '<Data updated sucessfully>'
+    }
+});
+});
+
+/**
+ * .delete() method handles the data delete request from the user
+ *  
+ * syntax : app.delete( ' url/: property-name-to-delete' , (req, res)={})
+ */
+app.delete('/api/v1/tours/:id' , (req , res)=>{
+    const id = req.params.id *1;
+
+    if(id > tours.length){
+        return res.status(404).json({
+            status: 'Fail',
+            message : 'Invalid ID'
+        })
+    }
+    
+    // 204 status code specifies that no data should be send in response.
+    res.status(204).json({
+        status : 'success',
+        data : null
+    })
+});
+
 
 // started listening on the port 8000
 app.listen(port ,host, ()=>{
