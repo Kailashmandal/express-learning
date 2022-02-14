@@ -30,43 +30,16 @@ app.get('/' ,(req, res)=>{
     res.status(200).send('welcome to our application.');
 })
 
-app.get('/api/v1/tours', (req ,res)=>{
-   res.status(200).json({
-       status : 'success',
-       results : tours.length,
-       data : {
-           tours : tours
-       }
-   })
-});
-
-/**
- * handling parameters here :
- * 
- *  suppose we have an extra parametere in the url 
- *  '/api/v1/tours/5' 5 is a parameter here than we hav to handle it
- *  by specifying an variable in the the route like -  /:var-name1/: var-name2/: var-name3
- * 
- * we can also have optional parameters : i.e it not need to be passed in url
- * 
- * for exmaple if url: 127.0.0.1:8000/api/v1/tours/5/6 <- two parameters is here but we int
- *  the route we can make it optional to fetch the url parameter by adding a question mark after 
- *  the parameter name or var-name for example -> app.get('/api/v1/tours/:id/:x?/:y?' ,(req, res)=>{})
- *   in this example x and y are optional which means that if user do not add params than 
- *  no error will be thrown.
- */
-
-
-// app.get('/api/v1/tours/:id/:x/:y?', (req ,res)=>{
-//     console.log(req.params);
-//     // params is request property that contains the parameters in it of type object
-//     res.status(200).json({
-//         status : 'success',
-        
-//     })
-//  });
- 
-app.get('/api/v1/tours/:id' , (req, res)=>{
+const getAllTours = (req ,res)=>{
+    res.status(200).json({
+        status : 'success',
+        results : tours.length,
+        data : {
+            tours : tours
+        }
+    })
+ }
+ const getTour = (req, res)=>{
     console.log(req.params);
      // id is string now but we have to convert it into the integer by multiplying *1
     const id = req.params.id * 1; 
@@ -96,10 +69,40 @@ app.get('/api/v1/tours/:id' , (req, res)=>{
     })
 
 
-})
+};
+
+// app.get('/api/v1/tours', getAllTours );
+
+/**
+ * handling parameters here :
+ * 
+ *  suppose we have an extra parametere in the url 
+ *  '/api/v1/tours/5' 5 is a parameter here than we hav to handle it
+ *  by specifying an variable in the the route like -  /:var-name1/: var-name2/: var-name3
+ * 
+ * we can also have optional parameters : i.e it not need to be passed in url
+ * 
+ * for exmaple if url: 127.0.0.1:8000/api/v1/tours/5/6 <- two parameters is here but we int
+ *  the route we can make it optional to fetch the url parameter by adding a question mark after 
+ *  the parameter name or var-name for example -> app.get('/api/v1/tours/:id/:x?/:y?' ,(req, res)=>{})
+ *   in this example x and y are optional which means that if user do not add params than 
+ *  no error will be thrown.
+ */
+
+
+// app.get('/api/v1/tours/:id/:x/:y?', (req ,res)=>{
+//     console.log(req.params);
+//     // params is request property that contains the parameters in it of type object
+//     res.status(200).json({
+//         status : 'success',
+        
+//     })
+//  });
+ 
+// app.get('/api/v1/tours/:id' ,getTour );
 
 // handling post requests
-app.post('/api/v1/tours', (req , res)=>{
+const addTour = (req , res)=>{
     // for posting any data req object contains the data
        //console.log(req.body);
 
@@ -119,7 +122,9 @@ app.post('/api/v1/tours', (req , res)=>{
             })
   })
     //    res.send('done');
-});
+};
+
+// app.post('/api/v1/tours', addTour);
 
 /**
  *  patch request method : used to update only
@@ -129,7 +134,7 @@ app.post('/api/v1/tours', (req , res)=>{
  *  
  *  parameter-value is new value that we want to update. 
  */
-app.patch('/api/v1/tours/:id' , (req , res)=>{
+const updateTour =  (req , res)=>{
     const id = req.params.id *1;
     if(id > tours.length){
         return res.status(404).json({
@@ -145,14 +150,16 @@ app.patch('/api/v1/tours/:id' , (req , res)=>{
         meassage: '<Data updated sucessfully>'
     }
 });
-});
+};
+
+// app.patch('/api/v1/tours/:id' ,updateTour);
 
 /**
  * .delete() method handles the data delete request from the user
  *  
  * syntax : app.delete( ' url/: property-name-to-delete' , (req, res)={})
  */
-app.delete('/api/v1/tours/:id' , (req , res)=>{
+const deleteTour=(req , res)=>{
     const id = req.params.id *1;
 
     if(id > tours.length){
@@ -167,8 +174,23 @@ app.delete('/api/v1/tours/:id' , (req , res)=>{
         status : 'success',
         data : null
     })
-});
+};
 
+// app.delete('/api/v1/tours/:id' , deleteTour);
+
+/**
+ *  concantenating the methods here with url routes
+ */
+
+app.route('/api/v1/tours')
+.get(getAllTours)
+.post(addTour) ;
+
+
+app.route('/api/v1/tours/:id')
+.get(getTour)
+.patch(updateTour)
+.delete(deleteTour);
 
 // started listening on the port 8000
 app.listen(port ,host, ()=>{
